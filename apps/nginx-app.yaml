@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx
+  name: nginx-app
   namespace: argocd
 spec:
-  project: test
-  sources:
+  project: test-project
+  source:
     - repoURL: https://charts.bitnami.com/bitnami
       chart: nginx
-      targetRevision: '19.0.0'
+      targetRevision: 19.0.0
       helm:
         valueFiles:
           - $values/nginx/values.yaml
@@ -17,5 +17,9 @@ spec:
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: nginx
-  syncPolicy: {}
+    namespace: infra-nginx  # 실제 앱이 설치될 네임스페이스
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
